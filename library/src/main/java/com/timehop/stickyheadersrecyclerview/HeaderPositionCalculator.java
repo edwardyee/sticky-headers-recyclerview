@@ -1,6 +1,7 @@
 package com.timehop.stickyheadersrecyclerview;
 
 import android.graphics.Rect;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -122,14 +123,14 @@ public class HeaderPositionCalculator {
 
     if (orientation == LinearLayoutManager.VERTICAL) {
       translationX = firstView.getLeft() - leftMargin + mTempRect1.left;
-      translationY = Math.max(
-          firstView.getTop() - topMargin - header.getHeight() - mTempRect1.bottom,
-          getListTop(recyclerView) + mTempRect1.top);
+      int finalY = firstView.getTop() - topMargin - header.getHeight() - mTempRect1.bottom;
+      int firstY = getListTop(recyclerView) + mTempRect1.top;
+      translationY = (firstY >= finalY)? firstY : finalY + (int)ViewCompat.getTranslationY(firstView);
     } else {
       translationY = firstView.getTop() - topMargin + mTempRect1.top;
-      translationX = Math.max(
-          firstView.getLeft() - leftMargin - header.getWidth() - mTempRect1.right,
-          getListLeft(recyclerView) + mTempRect1.left);
+      int finalX = firstView.getLeft() - leftMargin - header.getWidth() - mTempRect1.right;
+      int firstX = getListLeft(recyclerView) + mTempRect1.left;
+      translationX = (firstX >= finalX)? firstX : finalX + (int)ViewCompat.getTranslationX(firstView);
     }
 
     headerMargins.set(translationX, translationY, translationX + header.getWidth(),
