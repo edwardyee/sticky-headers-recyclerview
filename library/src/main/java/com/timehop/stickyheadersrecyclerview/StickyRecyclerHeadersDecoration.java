@@ -31,6 +31,8 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
    */
   private final Rect mTempRect = new Rect();
 
+  private int mShadowSize = 0;
+
   // TODO: Consider passing in orientation to simplify orientation accounting within calculation
   public StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter) {
     this(adapter, new LinearLayoutOrientationProvider(), new DimensionCalculator(), null);
@@ -120,7 +122,14 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
           mHeaderRects.put(position, headerOffset);
         }
         mHeaderPositionCalculator.initHeaderBounds(headerOffset, parent, header, itemView, hasStickyHeader);
-        mRenderer.drawHeader(parent, canvas, header, headerOffset);
+        if ( mShadowSize > 0 )
+        {
+          mRenderer.drawShadowedHeader(parent, canvas, header, headerOffset, mShadowSize );
+        }
+        else
+        {
+          mRenderer.drawHeader(parent, canvas, header, headerOffset);
+        }
       }
     }
   }
@@ -164,5 +173,10 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   public void invalidateHeaders() {
     mHeaderProvider.invalidate();
     mHeaderRects.clear();
+  }
+
+  public void setShadow( int size )
+  {
+    mShadowSize = size;
   }
 }

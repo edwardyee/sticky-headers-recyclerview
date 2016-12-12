@@ -1,11 +1,11 @@
 package com.timehop.stickyheadersrecyclerview.rendering;
 
-import android.graphics.Canvas;
-import android.graphics.Rect;
+import android.content.res.Resources;
+import android.graphics.*;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
-
+import com.timehop.stickyheadersrecyclerview.R;
 import com.timehop.stickyheadersrecyclerview.calculation.DimensionCalculator;
 import com.timehop.stickyheadersrecyclerview.util.OrientationProvider;
 
@@ -50,9 +50,36 @@ public class HeaderRenderer {
       initClipRectForHeader(mTempRect, recyclerView, header);
       canvas.clipRect(mTempRect);
     }
+    canvas.translate(offset.left, offset.top);
+    header.draw(canvas);
+    canvas.restore();
+  }
 
+  public void drawShadowedHeader(RecyclerView recyclerView, Canvas canvas, View header, Rect offset, int shadowSize) {
+    canvas.save();
+
+    if (recyclerView.getLayoutManager().getClipToPadding()) {
+      // Clip drawing of headers to the padding of the RecyclerView. Avoids drawing in the padding
+      initClipRectForHeader(mTempRect, recyclerView, header);
+      canvas.clipRect(mTempRect);
+    }
     canvas.translate(offset.left, offset.top);
 
+    if ( canvas.getClipBounds().top == 0 && canvas.getClipBounds().left == 0 )
+    {
+      Resources resources = recyclerView.getResources();
+      int start = resources.getColor( R.color.header_shadow_start_color );
+      int end = resources.getColor( R.color.header_shadow_end_color );
+      int inset = resources.getDimensionPixelSize( R.dimen.shadow_inset );
+
+      Paint paint = new Paint();
+      //paint.setShader( new LinearGradient( 0, header.getBottom() - inset, 0, header.getBottom() + shadowSize, new int[]{start, start, end }, new float[]{0f, .5f, 1f}, Shader.TileMode.CLAMP ) );
+      paint.setShader( new LinearGradient( 0, header.getBottom() - inset, 0, header.getBottom() + shadowSize, start, end, Shader.TileMode.CLAMP ) );
+      paint.setAntiAlias( false );
+      paint.setStyle( Paint.Style.FILL );
+      RectF rectF = new RectF( header.getLeft(), header.getBottom() - inset, header.getRight(), header.getBottom() + shadowSize );
+      canvas.drawRect( rectF, paint );
+    }
     header.draw(canvas);
     canvas.restore();
   }

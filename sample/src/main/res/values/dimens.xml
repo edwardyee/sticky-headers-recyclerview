@@ -1,3 +1,4 @@
 <resources>
     <dimen name="small">8dp</dimen>
+    <dimen name="shadow">4dp</dimen>
 </resources>
